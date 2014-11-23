@@ -1,3 +1,4 @@
+## Reads a data set from a file and combines subjects and activities, and names the variables
 readAndCombineDataSet <- function(dataFile, subjectFile, activityFile, featuresFile) {
     data <- read.table(dataFile)
     subjects <- read.table(subjectFile)
@@ -45,15 +46,17 @@ readAndCombineDataSet <- function(dataFile, subjectFile, activityFile, featuresF
     combined
 }
 
-combineDataSets <- function(data1, data2) {
+## Simply merges the test and training data sets
+mergeDataSets <- function(data1, data2) {
     rbind(data1, data2)
 }
 
+## Provides the mean and stddev columns
 extractMeanAndStd <- function(data) {
     ## Which columns contain the mean and the std? Use the column names to find
     ## out which ones to extract. We use a regex to do this.
     columns <- grep("mean\\(\\)|std\\(\\)",colnames(data))
-    data[columns]
+    data[c(1,2,columns)]
 }
 
 ## Replace the activity column with activity names
@@ -64,6 +67,7 @@ mergeActivities <- function(data, labelsFile) {
     data
 }
 
+## Produces tidy data from a clean data set (i.e. subject, activity factors, and data vars)
 tidyData <- function(data) {
     ## Create a new data frame based on data dimensions
     ##newData <- data.frame(matrix(nrow=0, ncol=ncol(data)))
@@ -90,3 +94,35 @@ tidyData <- function(data) {
     newData
 }
 
+## Executes all five steps of the assignment
+run_analysis <- function(basepath = "UCI HAR Dataset") {
+    ## All the files we load
+    activityLabelsFile <- paste(basepath, "activity_labels.txt", sep="/")
+    featuresFile <- paste(basepath, "features.txt", sep="/")
+    xtestFile <- paste(basepath, "test", "X_test.txt", sep="/")
+    xtestsubjectsFile <- paste(basepath, "test", "subject_test.txt", sep="/")
+    xtestactivitiesFile <- paste(basepath, "test", "y_test.txt", sep="/")
+    xtrainFile <- paste(basepath, "train", "X_train.txt", sep="/")
+    xtrainsubjectsFile <- paste(basepath, "train", "subject_train.txt", sep="/")
+    xtrainactivitiesFile <- paste(basepath, "train", "y_train.txt", sep="/")
+    
+    ## Load the data
+    data1 <- readAndCombineDataSet(xtestFile, xtestsubjectsFile, xtestactivitiesFile, featuresFile)
+    data2 <- readAndCombineDataSet(xtrainFile, xtrainsubjectsFile, xtrainactivitiesFile, featuresFile)
+    
+    ## Merge the data
+    mergedData <- mergeDataSets(data1, data2)
+    
+    ## Extract mean and std
+    meanStdData <- extractMeanAndStd(mergedData)
+    
+    ## Add activity names
+    completeData <- mergeActivities(meanStdData, activityLabelsFile)
+    
+    ## Tidy up
+    tidy <- tidyData(completeData)
+    
+    ## Sort based on subject and return
+    tidy[order(tidy$subject),]
+    
+}
