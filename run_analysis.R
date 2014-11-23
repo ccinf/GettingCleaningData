@@ -56,20 +56,12 @@ extractMeanAndStd <- function(data) {
     data[columns]
 }
 
-readActivities <- function(labelsFile) {
-    read.table(labelsFile)
-}
-
-readSubjects <- function(subjectsFile) {
-    read.table(subjectsFile)
-}
-
-mergeActivities <- function(data, labelsData) {
-    
-}
-
-mergeSubjects <- function(data, subjectsData) {
-    
+## Replace the activity column with activity names
+mergeActivities <- function(data, labelsFile) {
+    labels <- read.table(labelsFile)
+    f <- factor(labels$V2)
+    data$activity <- factor(data$activity, levels = labels$V1, labels = f)
+    data
 }
 
 tidyData <- function() {
