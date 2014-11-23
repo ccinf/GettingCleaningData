@@ -64,7 +64,29 @@ mergeActivities <- function(data, labelsFile) {
     data
 }
 
-tidyData <- function() {
+tidyData <- function(data) {
+    ## Create a new data frame based on data dimensions
+    ##newData <- data.frame(matrix(nrow=0, ncol=ncol(data)))
+    newData <- NULL;
     
+    ## Unique subjects
+    subjects <- unique(data$subject)
+    
+    ## Unique activities
+    activities <- unique(data$activity)
+    
+    ## Iterate over all subjects and activities, calculating the mean for each variable
+    numColumns <- ncol(data)
+    for (subject in subjects) {
+        for (activity in activities) {
+            ssData <- subset(data, subject == subject & activity == activity, select = 3:ncol(data))
+            means <- data.frame(colMeans(ssData))
+            newData <- rbind(newData,data.frame(subject=subject, activity=activity, t(means), stringsAsFactors=TRUE))
+        }
+    }
+    
+    ## Finally, set our column names and return
+    names(newData) <- names(data)
+    newData
 }
 
