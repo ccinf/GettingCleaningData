@@ -31,4 +31,4 @@ For each record in the dataset it is provided:
 
 ##Data Set Transformation:##
 
-The data was further transformed to compute the averages of mean and standard deviation features per subject per activity. The results of this transformation can be viewed in tidy.txt.
+The data was further transformed to compute the averages of mean and standard deviation features per subject per activity. The results of this transformation can be viewed in tidy.txt which, in addition to the averages in the features columns (columns 3-68), it contains a subject identifier and the activity performed.
